@@ -45,20 +45,22 @@ export default function Navbar({ currentPage, onNavigate }: NavbarProps) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => handleNavClick('home')}
+          <a
+            href="#home"
+            onClick={(e) => { e.preventDefault(); handleNavClick('home'); }}
             className={`text-lg sm:text-xl md:text-2xl font-light tracking-widest transition-colors duration-300 ${
               isNonHome ? 'text-gray-900 hover:text-amber-600' : 'text-white hover:text-amber-400'
             }`}
           >
             LUXE INTERIORS
-          </button>
+          </a>
 
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <button
+              <a
                 key={item.id}
-                onClick={() => handleNavClick(item.id)}
+                href={`#${item.id}`}
+                onClick={(e) => { e.preventDefault(); handleNavClick(item.id); }}
                 className={`text-sm font-light tracking-wider transition-all duration-300 relative group ${
                   currentPage === item.id
                     ? isNonHome
@@ -75,7 +77,7 @@ export default function Navbar({ currentPage, onNavigate }: NavbarProps) {
                     currentPage === item.id ? 'w-full' : 'w-0 group-hover:w-full'
                   }`}
                 ></span>
-              </button>
+              </a>
             ))}
           </div>
 
@@ -96,9 +98,10 @@ export default function Navbar({ currentPage, onNavigate }: NavbarProps) {
         }`}>
           <div className="flex flex-col items-center py-8 space-y-6">
             {navItems.map((item) => (
-              <button
+              <a
                 key={item.id}
-                onClick={() => handleNavClick(item.id)}
+                href={`#${item.id}`}
+                onClick={(e) => { e.preventDefault(); handleNavClick(item.id); }}
                 className={`text-lg font-light tracking-wider transition-colors duration-300 ${
                   currentPage === item.id
                     ? isNonHome
@@ -110,7 +113,7 @@ export default function Navbar({ currentPage, onNavigate }: NavbarProps) {
                 }`}
               >
                 {item.name}
-              </button>
+              </a>
             ))}
           </div>
         </div>
