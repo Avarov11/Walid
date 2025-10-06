@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, Sparkles, Award, Users } from 'lucide-react';
-import { supabase, type Project } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, type Project } from '../lib/supabase';
 
 interface HomeProps {
   onNavigate: (page: string) => void;
@@ -25,10 +25,13 @@ export default function Home({ onNavigate }: HomeProps) {
   }, []);
 
   useEffect(() => {
-    fetchFeaturedProjects();
+    if (isSupabaseConfigured) {
+      fetchFeaturedProjects();
+    }
   }, []);
 
   const fetchFeaturedProjects = async () => {
+    if (!supabase) return;
     const { data } = await supabase
       .from('projects')
       .select('*')
