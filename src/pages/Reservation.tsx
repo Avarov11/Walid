@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Calendar, MapPin, DollarSign, Home, Mail, Phone, User, MessageSquare, CheckCircle } from 'lucide-react';
-import { supabase, type ConsultationRequest } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, type ConsultationRequest } from '../lib/supabase';
 
 export default function Reservation() {
   const [formData, setFormData] = useState<ConsultationRequest>({
@@ -15,6 +15,7 @@ export default function Reservation() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const projectTypes = [
     'Villa Interior Design',
@@ -44,10 +45,23 @@ export default function Reservation() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMsg(null);
+
+    if (!isSupabaseConfigured || !supabase) {
+      setErrorMsg('Submission disabled: Supabase is not configured.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      // Convert empty preferred_date to null to satisfy date column type
+      preferred_date: formData.preferred_date ? formData.preferred_date : null
+    } as ConsultationRequest & { preferred_date: string | null };
 
     const { error } = await supabase
       .from('consultation_requests')
-      .insert([formData]);
+      .insert([payload]);
 
     if (!error) {
       setIsSuccess(true);
@@ -62,6 +76,8 @@ export default function Reservation() {
         message: ''
       });
       setTimeout(() => setIsSuccess(false), 5000);
+    } else {
+      setErrorMsg(error.message || 'Failed to submit. Please try again.');
     }
 
     setIsSubmitting(false);
@@ -160,6 +176,11 @@ export default function Reservation() {
 
           <div>
             <form onSubmit={handleSubmit} className="bg-white p-8 lg:p-12 shadow-lg">
+              {errorMsg && (
+                <div className="mb-6 p-4 border border-red-200 bg-red-50 text-red-700 text-sm">
+                  {errorMsg}
+                </div>
+              )}
               <div className="space-y-6">
                 <div>
                   <label className="flex items-center text-sm font-light tracking-wider text-gray-700 mb-2">
