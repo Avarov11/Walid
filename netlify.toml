@@ -11,3 +11,10 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Force HTTPS (redirect all http requests to https)
+[[redirects]]
+  from = "http://*"
+  to = "https://:splat"
+  status = 301
+  force = true
